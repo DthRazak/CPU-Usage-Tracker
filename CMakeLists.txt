@@ -13,11 +13,20 @@ set(CMAKE_C_STANDARD 11)
 set(INCLUDES_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 set(SOURCES_FILES_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
-set(SOURCES
-    "${SOURCES_FILES_DIR}/main.c"
+set(HEADERS
+    "${INCLUDES_DIR}/core/reader.h"
 )
 
-add_executable(${PROJECT_NAME} ${SOURCES})
+set(SOURCES
+    "${SOURCES_FILES_DIR}/main.c"
+    "${SOURCES_FILES_DIR}/core/reader.c"
+)
+
+add_executable(${PROJECT_NAME} ${HEADERS} ${SOURCES})
+
+target_include_directories(${PROJECT_NAME} PUBLIC
+    $<BUILD_INTERFACE:${INCLUDES_DIR}>
+)
 
 target_compile_options(${PROJECT_NAME} PRIVATE
   $<$<CXX_COMPILER_ID:GNU>:-Wall -Wextra>
