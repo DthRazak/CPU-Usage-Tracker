@@ -1,0 +1,25 @@
+cmake_minimum_required(VERSION 3.20)
+
+set(PROJECT_VERSION "0.1.0")
+set(PROJECT_NAME "cpu-ut")
+
+project(${PROJECT_NAME}
+    VERSION ${PROJECT_VERSION}
+    LANGUAGES C
+    DESCRIPTION "CPU Usage Tracker"
+)
+set(CMAKE_C_STANDARD 11)
+
+set(INCLUDES_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
+set(SOURCES_FILES_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
+
+set(SOURCES
+    "${SOURCES_FILES_DIR}/main.c"
+)
+
+add_executable(${PROJECT_NAME} ${SOURCES})
+
+target_compile_options(${PROJECT_NAME} PRIVATE
+  $<$<CXX_COMPILER_ID:GNU>:-Wall -Wextra>
+  $<$<CXX_COMPILER_ID:Clang>:-Weverything>
+)
