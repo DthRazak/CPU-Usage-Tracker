@@ -1,3 +1,5 @@
+#include <string.h>
+
 #include "core/types.h"
 
 
@@ -19,7 +21,7 @@ cpu_stat* cpu_stat_new(size_t cores){
     return cpu_stat_init(malloc(sizeof(cpu_stat)), cores);
 }
 
-void cpu_stat_destroy(cpu_stat* cpu_data){
+void cpu_stat_delete(cpu_stat* cpu_data){
     if (cpu_data) {
         free(cpu_data->time_data);
         cpu_stat_init(cpu_data, 0);
@@ -28,8 +30,12 @@ void cpu_stat_destroy(cpu_stat* cpu_data){
 }
 
 void cpu_stat_copy(cpu_stat *dest, cpu_stat *src){
-    dest->core_num = src->core_num;
-    memcpy(dest->time_data, src->time_data, sizeof(cpu_time)*(src->core_num+1));
+    if (src->core_num){
+        dest->core_num = src->core_num;
+        memcpy(dest->time_data, src->time_data, sizeof(cpu_time[src->core_num+1]));
+    }else{
+        dest = cpu_stat_init(dest, 0);
+    }
 }
 
 cpu_usage* cpu_usage_init(cpu_usage* usage_data, size_t cores){
@@ -59,6 +65,10 @@ void cpu_usage_delete(cpu_usage* usage_data){
 }
 
 void cpu_usage_copy(cpu_usage *dest, cpu_usage *src){
-    dest->core_num = src->core_num;
-    memcpy(dest->usage_data, src->usage_data, sizeof(uint32_t)*(src->core_num+1));
+    if (src->core_num){
+        dest->core_num = src->core_num;
+        memcpy(dest->usage_data, src->usage_data, sizeof(uint32_t[src->core_num+1]));
+    }else{
+        dest = cpu_usage_init(dest, 0);
+    }
 }
