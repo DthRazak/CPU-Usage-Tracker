@@ -27,6 +27,11 @@ void cpu_stat_destroy(cpu_stat* cpu_data){
     free(cpu_data);
 }
 
+void cpu_stat_copy(cpu_stat *dest, cpu_stat *src){
+    dest->core_num = src->core_num;
+    memcpy(dest->time_data, src->time_data, sizeof(cpu_time)*(src->core_num+1));
+}
+
 cpu_usage* cpu_usage_init(cpu_usage* usage_data, size_t cores){
     if (usage_data){
         if (cores){
@@ -51,4 +56,9 @@ void cpu_usage_delete(cpu_usage* usage_data){
         cpu_usage_init(usage_data, 0);
     }
     free(usage_data);
+}
+
+void cpu_usage_copy(cpu_usage *dest, cpu_usage *src){
+    dest->core_num = src->core_num;
+    memcpy(dest->usage_data, src->usage_data, sizeof(uint32_t)*(src->core_num+1));
 }

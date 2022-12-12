@@ -26,6 +26,7 @@ struct cpu_stat {
 
 cpu_stat* cpu_stat_new(size_t cores);
 void cpu_stat_delete(cpu_stat* cpu_data);
+void cpu_stat_copy(cpu_stat *dest, cpu_stat *src);
 
 typedef struct cpu_usage cpu_usage;
 struct cpu_usage {
@@ -35,6 +36,7 @@ struct cpu_usage {
 
 cpu_usage* cpu_usage_new(size_t cores);
 void cpu_usage_delete(cpu_usage* usage_data);
+void cpu_usage_copy(cpu_usage *dest, cpu_usage *src);
 
 #define CPU_STAT_INIT                   \
 {                                       \
