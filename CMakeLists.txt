@@ -16,12 +16,14 @@ set(SOURCES_FILES_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 set(HEADERS
     "${INCLUDES_DIR}/core/types.h"
     "${INCLUDES_DIR}/core/reader.h"
+    "${INCLUDES_DIR}/core/analyzer.h"
 )
 
 set(SOURCES
     "${SOURCES_FILES_DIR}/main.c"
     "${SOURCES_FILES_DIR}/core/types.c"
     "${SOURCES_FILES_DIR}/core/reader.c"
+    "${SOURCES_FILES_DIR}/core/analyzer.c"
 )
 
 add_executable(${PROJECT_NAME} ${HEADERS} ${SOURCES})
