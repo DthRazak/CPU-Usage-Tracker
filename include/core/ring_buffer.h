@@ -14,7 +14,13 @@ enum BufferItemType {
     CPU_USAGE_T
 };
 
-RingBuffer* RingBuffer_new(BufferItemType type, size_t size);
+typedef struct BufferItemParams BufferItemParams;
+struct BufferItemParams {
+    BufferItemType type;
+    size_t core_num;
+};
+
+RingBuffer* RingBuffer_new(BufferItemParams params, size_t size);
 void RingBuffer_destroy(RingBuffer* buffer);
 
 #endif // CPUUT_RINGBUFFER_H

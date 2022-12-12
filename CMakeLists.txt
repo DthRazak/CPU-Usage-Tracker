@@ -34,6 +34,9 @@ target_include_directories(${PROJECT_NAME} PUBLIC
     $<BUILD_INTERFACE:${INCLUDES_DIR}>
 )
 
+find_package(Threads REQUIRED)
+target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads)
+
 target_compile_options(${PROJECT_NAME} PRIVATE
   $<$<CXX_COMPILER_ID:GNU>:-Wall -Wextra>
   $<$<CXX_COMPILER_ID:Clang>:-Weverything>
