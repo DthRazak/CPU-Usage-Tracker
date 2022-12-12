@@ -14,6 +14,7 @@ set(INCLUDES_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 set(SOURCES_FILES_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 set(HEADERS
+    "${INCLUDES_DIR}/core/types.h"
     "${INCLUDES_DIR}/core/reader.h"
 )
 
