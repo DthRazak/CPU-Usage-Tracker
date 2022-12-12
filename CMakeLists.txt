@@ -20,6 +20,7 @@ set(HEADERS
 
 set(SOURCES
     "${SOURCES_FILES_DIR}/main.c"
+    "${SOURCES_FILES_DIR}/core/types.c"
     "${SOURCES_FILES_DIR}/core/reader.c"
 )
 

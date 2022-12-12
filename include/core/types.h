@@ -24,11 +24,17 @@ struct cpu_stat {
     cpu_time* time_data;
 };
 
+cpu_stat* cpu_stat_new(size_t cores);
+void cpu_stat_delete(cpu_stat* cpu_data);
+
 typedef struct cpu_usage cpu_usage;
 struct cpu_usage {
     size_t core_num;
     uint32_t* usage_data;
 };
+
+cpu_usage* cpu_usage_new(size_t cores);
+void cpu_usage_delete(cpu_usage* usage_data);
 
 #define CPU_STAT_INIT                   \
 {                                       \
