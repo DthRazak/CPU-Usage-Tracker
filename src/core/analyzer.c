@@ -1,7 +1,24 @@
 #include "core/analyzer.h"
 
+#define CPU_USAGE_BUFFER_SIZE 10
 
-void analyzer_run(void){
+
+Analyzer analyzer;
+
+void analyzer_init(int core_num){
+    // RingBuffer initialization for global `analyzer` object
+    BufferItemParams params = {
+        .type = CPU_USAGE_T,
+        .core_num = core_num
+    };
+    analyzer.cpu_usage_buffer = RingBuffer_new(params, CPU_USAGE_BUFFER_SIZE);
+}
+
+void analyzer_destroy(void){
+    RingBuffer_delete(analyzer.cpu_usage_buffer);
+}
+
+void analyzer_start(void){
     cpu_stat *cpu_data_prev = cpu_stat_new(0);
     cpu_stat *cpu_data_now  = cpu_stat_new(0);
 

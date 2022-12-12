@@ -21,6 +21,6 @@ struct BufferItemParams {
 };
 
 RingBuffer* RingBuffer_new(BufferItemParams params, size_t size);
-void RingBuffer_destroy(RingBuffer* buffer);
+void RingBuffer_delete(RingBuffer* buffer);
 
 #endif // CPUUT_RINGBUFFER_H

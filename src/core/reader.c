@@ -3,13 +3,15 @@
 
 #include "core/reader.h"
 
-#define CORE_PARAMS_NUM 11
+#define CORE_PARAMS_NUM         11
+#define CPU_STAT_BUFFER_SIZE    10
 
 
 int scan_line(const char* buffer, cpu_time* core_time);
 int get_cpu_core_num(void);
 
 Reader reader;
+cpu_stat cpu_data;
 
 int reader_init(void){
     int core_num = get_cpu_core_num();
@@ -18,17 +20,23 @@ int reader_init(void){
         return -1;
     }
 
-    cpu_stat cpu_data = {
-        .core_num = core_num,
-        .time_data = malloc(sizeof(cpu_time) * (core_num+1))
-    };
-    reader.cpu_data = cpu_data;
+    // Initialization of global `cpu_data` object
+    cpu_data.core_num  = core_num;
+    cpu_data.time_data = malloc(sizeof(cpu_time) * (core_num+1));
 
-    return 0;
+    // RingBuffer initialization for global `reader` object
+    BufferItemParams params = {
+        .type = CPU_STAT_T,
+        .core_num = core_num
+    };
+    reader.cpu_stat_buffer = RingBuffer_new(params, CPU_STAT_BUFFER_SIZE);
+
+    return core_num;
 }
 
 void reader_destroy(void){
-    free(reader.cpu_data.time_data);
+    RingBuffer_delete(reader.cpu_stat_buffer);
+    free(cpu_data.time_data);
 }
 
 int scan_line(const char* buffer, cpu_time* core_time){

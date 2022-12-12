@@ -57,7 +57,7 @@ RingBuffer* RingBuffer_new(BufferItemParams params, size_t size){
     return RingBuffer_init(malloc(sizeof(RingBuffer)), params, size);
 }
 
-void RingBuffer_destroy(RingBuffer* buffer){
+void RingBuffer_delete(RingBuffer* buffer){
     if (buffer) {
         if (buffer->type == CPU_STAT_T){
             for (int i = 0; i < buffer->size; ++i){
