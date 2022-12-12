@@ -41,14 +41,14 @@ cpu_usage* cpu_usage_init(cpu_usage* usage_data, size_t cores){
     return usage_data;
 }
 
-cpu_stat* cpu_usage_new(size_t cores){
-    return cpu_stat_init(malloc(sizeof(cpu_usage)), cores);
+cpu_usage* cpu_usage_new(size_t cores){
+    return cpu_usage_init(malloc(sizeof(cpu_usage)), cores);
 }
 
-void cpu_usage_delete(cpu_stat* usage_data){
+void cpu_usage_delete(cpu_usage* usage_data){
     if (usage_data) {
-        free(usage_data->time_data);
-        cpu_stat_init(usage_data, 0);
+        free(usage_data->usage_data);
+        cpu_usage_init(usage_data, 0);
     }
     free(usage_data);
 }
