@@ -17,6 +17,7 @@ set(HEADERS
     "${INCLUDES_DIR}/core/types.h"
     "${INCLUDES_DIR}/core/reader.h"
     "${INCLUDES_DIR}/core/analyzer.h"
+    "${INCLUDES_DIR}/core/ring_buffer.h"
 )
 
 set(SOURCES
@@ -24,6 +25,7 @@ set(SOURCES
     "${SOURCES_FILES_DIR}/core/types.c"
     "${SOURCES_FILES_DIR}/core/reader.c"
     "${SOURCES_FILES_DIR}/core/analyzer.c"
+    "${SOURCES_FILES_DIR}/core/ring_buffer.c"
 )
 
 add_executable(${PROJECT_NAME} ${HEADERS} ${SOURCES})
