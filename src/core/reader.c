@@ -10,6 +10,7 @@
 #define READER_WAIT_TIME_MCS    250000
 
 int scan_line(FILE* file, char* cpu_stat_name, cpu_time* core_time);
+int read_cpu_data(cpu_stat *cpu_data);
 int get_cpu_core_num(void);
 
 Reader reader;
@@ -45,23 +46,39 @@ extern volatile sig_atomic_t is_active;
 
 int reader_start(void *args){
     while (is_active){
-        FILE* file = fopen("/proc/stat", "r");
-        if (file == NULL) {
+        if (read_cpu_data(&cpu_data) == EXIT_FAILURE){
             is_active = false;
+            // Unlocking analyzer thread
+            RingBuffer_write(reader.cpu_stat_buffer, &cpu_data);
             return EXIT_FAILURE;
         }
-
-        for (size_t i = 0; i < cpu_data.core_num+1; ++i){
-            char cpu_stat_name[8];
-            int ret = scan_line(file, cpu_stat_name, &cpu_data.time_data[i]);
-        }
-
-        fclose(file);
-
         RingBuffer_write(reader.cpu_stat_buffer, &cpu_data);
 
         usleep(READER_WAIT_TIME_MCS);
     }
+
+    // Write one last time to unlock analyzer thread
+    read_cpu_data(&cpu_data);
+    RingBuffer_write(reader.cpu_stat_buffer, &cpu_data);
+
+    return EXIT_SUCCESS;
+}
+
+int read_cpu_data(cpu_stat *cpu_data){
+    FILE* file = fopen("/proc/stat", "r");
+    if (file == NULL) {
+        is_active = false;
+        return EXIT_FAILURE;
+    }
+
+    for (size_t i = 0; i < cpu_data->core_num+1; ++i){
+        char cpu_stat_name[8];
+        int ret = scan_line(file, cpu_stat_name, &cpu_data->time_data[i]);
+    }
+
+    fclose(file);
+
+    return EXIT_SUCCESS;
 }
 
 int scan_line(FILE* file, char* cpu_stat_name, cpu_time* core_time){
@@ -107,6 +124,7 @@ int get_cpu_core_num(void){
 
     fclose(file);
 
-    // Number of cores equal to number of scanned lines without first one
-    return cpu_data_cnt-1;
+    // Number of cores equal to number of scanned lines 
+    // without first and last one
+    return cpu_data_cnt-2;
 }
