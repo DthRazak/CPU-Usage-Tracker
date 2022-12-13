@@ -6,7 +6,6 @@
 #include "termination_handler.h"
 
 #define CPU_USAGE_BUFFER_SIZE   10
-#define ANALYZER_WAIT_TIME_MCS  250000
 
 
 Analyzer analyzer;
@@ -42,22 +41,17 @@ int analyzer_start(void *args){
         for (size_t i = 0; i < usage_data->core_num + 1; ++i){
             double cpu_pct = calc_usage(&cpu_data_prev->time_data[i], 
                                         &cpu_data_now->time_data[i]);
-            
+
             usage_data->usage_data[i] = cpu_pct;
         }
-
-        printf("Analyzer: Total CPU  Usage = %.2f %%\n", usage_data->usage_data[0]);
-        printf("Analyzer: Total CPU0 Usage = %.2f %%\n", usage_data->usage_data[1]);
-        printf("Analyzer: Total CPU1 Usage = %.2f %%\n", usage_data->usage_data[2]);
-        printf("Analyzer: Total CPU2 Usage = %.2f %%\n", usage_data->usage_data[3]);
-        printf("Analyzer: Total CPU3 Usage = %.2f %%\n\n", usage_data->usage_data[4]);
         
-        // TODO: Send `usage_data` to printer
+        RingBuffer_write(analyzer.cpu_usage_buffer, usage_data);
 
         cpu_stat_copy(cpu_data_prev, cpu_data_now);
-
-        usleep(ANALYZER_WAIT_TIME_MCS);
     }
+
+    // Write one last time to unlock printer thread
+    RingBuffer_write(analyzer.cpu_usage_buffer, usage_data);
     
     cpu_usage_delete(usage_data);
     cpu_stat_delete(cpu_data_prev);
