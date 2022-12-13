@@ -8,7 +8,7 @@ void cpu_stat_init(cpu_stat* cpu_data, size_t cores){
         if (cores){
             *cpu_data = (cpu_stat) {
                 .core_num = cores,
-                .time_data = malloc(sizeof(cpu_time) * (cores+1))
+                .time_data = malloc(sizeof(cpu_time[cores+1]))
             };
         } else{
             *cpu_data = (cpu_stat) CPU_STAT_INIT;
@@ -49,7 +49,7 @@ void cpu_usage_init(cpu_usage* usage_data, size_t cores){
         if (cores){
             *usage_data = (cpu_usage) {
                 .core_num = cores,
-                .usage_data = malloc(sizeof(uint32_t) * (cores+1))
+                .usage_data = malloc(sizeof(double[cores+1]))
             };
         } else{
             *usage_data = (cpu_usage) CPU_USAGE_INIT;
@@ -79,7 +79,7 @@ void cpu_usage_delete(cpu_usage* usage_data){
 void cpu_usage_copy(cpu_usage *dest, cpu_usage *src){
     if (src->core_num){
         dest->core_num = src->core_num;
-        memcpy(dest->usage_data, src->usage_data, sizeof(uint32_t[src->core_num+1]));
+        memcpy(dest->usage_data, src->usage_data, sizeof(double[src->core_num+1]));
     }else{
         cpu_usage_init(dest, 0);
     }

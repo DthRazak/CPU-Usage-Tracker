@@ -33,7 +33,7 @@ void cpu_stat_copy(cpu_stat *dest, cpu_stat *src);
 typedef struct cpu_usage cpu_usage;
 struct cpu_usage {
     size_t core_num;
-    uint32_t* usage_data;
+    double* usage_data;
 };
 
 void cpu_usage_init(cpu_usage *usage_data, size_t cores);

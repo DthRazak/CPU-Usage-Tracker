@@ -19,6 +19,6 @@ void analyzer_init(int core_num);
 int analyzer_start(void *args);
 void analyzer_destroy(void);
 
-uint32_t calc_usage(cpu_time *time_prev, cpu_time *time_now);
+double calc_usage(cpu_time *time_prev, cpu_time *time_now);
 
 #endif // CPUUT_ANALYZER_H
