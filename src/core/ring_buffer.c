@@ -80,19 +80,19 @@ void RingBuffer_delete(RingBuffer* buffer){
     free(buffer);
 }
 
-void RingBugger_write(RingBuffer *buffer, void *item){
+void RingBuffer_write(RingBuffer *buffer, void *item){
     mtx_lock(&buffer->mtx);
-    while (buffer->count != buffer->size){
+    if (buffer->count == buffer->size){
         cnd_wait(&buffer->non_full, &buffer->mtx);
     }
     assert(0 <= buffer->count && buffer->count < buffer->size);
 
     if (buffer->type == CPU_STAT_T){
         cpu_stat *ptr = (cpu_stat*)(buffer->data) + buffer->tail++;
-        ptr = (cpu_stat*)item;
+        cpu_stat_copy(ptr, item);
     } else {
         cpu_usage *ptr = (cpu_usage*)(buffer->data) + buffer->tail++;
-        ptr = (cpu_usage*)item;
+        cpu_usage_copy(ptr, item);
     }
     buffer->tail %= buffer->size;
     buffer->count++;
@@ -101,9 +101,9 @@ void RingBugger_write(RingBuffer *buffer, void *item){
     mtx_unlock(&buffer->mtx);
 }
 
-void RingBugger_read(RingBuffer *buffer, void *item){
+void RingBuffer_read(RingBuffer *buffer, void *item){
     mtx_lock(&buffer->mtx);
-    while (buffer->count != 0){
+    if (buffer->count == 0){
         cnd_wait(&buffer->non_empty, &buffer->mtx);
     }
     assert(0 < buffer->count && buffer->count <= buffer->size);
