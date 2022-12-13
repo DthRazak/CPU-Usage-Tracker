@@ -7,13 +7,13 @@
 
 #define CORE_PARAMS_NUM         11
 #define CPU_STAT_BUFFER_SIZE    10
+#define READER_WAIT_TIME_MCS    250000
 
-
-int scan_line(const char* buffer, cpu_time* core_time);
+int scan_line(FILE* file, char* cpu_stat_name, cpu_time* core_time);
 int get_cpu_core_num(void);
 
 Reader reader;
-cpu_stat cpu_data;
+static cpu_stat cpu_data;
 
 int reader_init(void){
     int core_num = get_cpu_core_num();
@@ -24,7 +24,7 @@ int reader_init(void){
 
     // Initialization of global `cpu_data` object
     cpu_data.core_num  = core_num;
-    cpu_data.time_data = malloc(sizeof(cpu_time) * (core_num+1));
+    cpu_data.time_data = malloc(sizeof(cpu_time[core_num+1]));
 
     // RingBuffer initialization for global `reader` object
     BufferItemParams params = {
@@ -45,21 +45,38 @@ extern volatile sig_atomic_t is_active;
 
 int reader_start(void *args){
     while (is_active){
-        printf("Reader test msg\n");
+        FILE* file = fopen("/proc/stat", "r");
+        if (file == NULL) {
+            is_active = false;
+            return EXIT_FAILURE;
+        }
 
-        sleep(2);
+        for (size_t i = 0; i < cpu_data.core_num+1; ++i){
+            char cpu_stat_name[8];
+            int ret = scan_line(file, cpu_stat_name, &cpu_data.time_data[i]);
+        }
+
+        fclose(file);
+
+        RingBuffer_write(reader.cpu_stat_buffer, &cpu_data);
+
+        usleep(READER_WAIT_TIME_MCS);
     }
 }
 
-int scan_line(const char* buffer, cpu_time* core_time){
-    char cpu_stat_name[8];
-
-    int ret = sscanf(buffer,
-        "%s %16llu %16llu %16llu %16llu %16llu %16llu %16llu %16llu %16llu %16llu",
-        cpu_stat_name, 
-        &core_time->user, &core_time->nice, &core_time->system, &core_time->idle, 
-        &core_time->iowait, &core_time->irq, &core_time->softirq, &core_time->steal, 
-        &core_time->guest, &core_time->guestnice);
+int scan_line(FILE* file, char* cpu_stat_name, cpu_time* core_time){
+    int ret = fscanf(file, "%s %16u %16u %16u %16u %16u %16u %16u %16u %16u %16u",
+                    cpu_stat_name, 
+                    &core_time->user, 
+                    &core_time->nice, 
+                    &core_time->system, 
+                    &core_time->idle, 
+                    &core_time->iowait, 
+                    &core_time->irq, 
+                    &core_time->softirq, 
+                    &core_time->steal, 
+                    &core_time->guest, 
+                    &core_time->guestnice);
 
     return ret;
 }
@@ -71,13 +88,13 @@ int get_cpu_core_num(void){
         return -1;
     }
 
-    int cpu_data_cnt = 0;   // Number of `cpu` lines
-    char buffer[1024];      // Buffer to store one line from `/proc/stat` file 
+    int cpu_data_cnt = 0;           // Number of `cpu` lines
+    char cpu_stat_name[8] = "cpu";
 
     // Read file while the stat name begins with `cpu`
-    while (fgets(buffer, sizeof(buffer)-1, file) && !strncmp(buffer, "cpu", 3)){
+    while (!strncmp(cpu_stat_name, "cpu", 3)){
         cpu_time core_time;
-        int params_num = scan_line(buffer, &core_time);
+        int params_num = scan_line(file, cpu_stat_name, &core_time);
 
         if (params_num != CORE_PARAMS_NUM){
             perror("Could not read stat file");
