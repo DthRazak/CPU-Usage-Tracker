@@ -1,4 +1,8 @@
+#include <unistd.h>
+#include <stdio.h>
+
 #include "core/analyzer.h"
+#include "termination_handler.h"
 
 #define CPU_USAGE_BUFFER_SIZE 10
 
@@ -18,7 +22,9 @@ void analyzer_destroy(void){
     RingBuffer_delete(analyzer.cpu_usage_buffer);
 }
 
-void analyzer_start(void){
+extern volatile sig_atomic_t is_active;
+
+int analyzer_start(void *args){
     cpu_stat *cpu_data_prev = cpu_stat_new(0);
     cpu_stat *cpu_data_now  = cpu_stat_new(0);
 
@@ -26,7 +32,7 @@ void analyzer_start(void){
 
     cpu_usage *usage_data = cpu_usage_new(cpu_data_prev->core_num);
 
-    while (1) {
+    while (0) {
         // TODO: Read `cpu_data_now` from RingBuffer
 
         for (size_t i = 0; i < usage_data->core_num + 1; ++i){
@@ -37,6 +43,12 @@ void analyzer_start(void){
         }
 
         // TODO: Send `usage_data` to printer
+    }
+
+    while (is_active){
+        printf("Analyzer test msg\n");
+
+        sleep(2);
     }
     
     cpu_usage_delete(usage_data);

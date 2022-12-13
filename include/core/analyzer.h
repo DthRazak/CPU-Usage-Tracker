@@ -16,7 +16,7 @@ struct Analyzer {
 extern Analyzer analyzer;
 
 void analyzer_init(int core_num);
-void analyzer_start(void);
+int analyzer_start(void *args);
 void analyzer_destroy(void);
 
 uint32_t calc_usage(cpu_time *time_prev, cpu_time *time_now);

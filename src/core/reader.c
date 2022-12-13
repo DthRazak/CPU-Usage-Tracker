@@ -1,7 +1,9 @@
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "core/reader.h"
+#include "termination_handler.h"
 
 #define CORE_PARAMS_NUM         11
 #define CPU_STAT_BUFFER_SIZE    10
@@ -37,6 +39,16 @@ int reader_init(void){
 void reader_destroy(void){
     RingBuffer_delete(reader.cpu_stat_buffer);
     free(cpu_data.time_data);
+}
+
+extern volatile sig_atomic_t is_active;
+
+int reader_start(void *args){
+    while (is_active){
+        printf("Reader test msg\n");
+
+        sleep(2);
+    }
 }
 
 int scan_line(const char* buffer, cpu_time* core_time){

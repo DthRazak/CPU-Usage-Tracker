@@ -18,7 +18,7 @@ struct Reader {
 extern Reader reader;
 
 int reader_init(void);
-void reader_start(void);
+int reader_start(void *args);
 void reader_destroy(void);
 
 #endif // CPUUT_READER_H
