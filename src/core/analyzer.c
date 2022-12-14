@@ -1,4 +1,5 @@
 #include <unistd.h>
+#include <time.h>
 #include <stdio.h>
 
 #include "core/reader.h"
@@ -35,6 +36,7 @@ int analyzer_start(void *args){
 
     RingBuffer_read(reader.cpu_stat_buffer, cpu_data_prev);
 
+    analyzer.last_update = time(0);
     while (is_active) {
         RingBuffer_read(reader.cpu_stat_buffer, cpu_data_now);
 
@@ -44,7 +46,7 @@ int analyzer_start(void *args){
 
             usage_data->usage_data[i] = cpu_pct;
         }
-        
+        analyzer.last_update = time(0);
         RingBuffer_write(analyzer.cpu_usage_buffer, usage_data);
 
         cpu_stat_copy(cpu_data_prev, cpu_data_now);

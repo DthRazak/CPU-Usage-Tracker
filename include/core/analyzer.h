@@ -19,7 +19,7 @@
 typedef struct Analyzer Analyzer;
 struct Analyzer {
     RingBuffer *cpu_usage_buffer;   /**< @c RingBuffer of @c cpu_usage */
-    _Atomic(clock_t) last_update;   /**< Atomic time of last read */
+    _Atomic(time_t) last_update;   /**< Atomic time of last read */
 };
 
 extern Analyzer analyzer;

@@ -39,6 +39,7 @@ int printer_start(void *args){
 
     time_t cur_sec = time(0);
     size_t print_cnt = 0;
+    printer.last_update = time(0);
     while (is_active) {
         while (is_active && (cur_sec == time(0) || data_per_sec == 0)){
             RingBuffer_read(analyzer.cpu_usage_buffer, &usage_data);
@@ -57,6 +58,7 @@ int printer_start(void *args){
         for (size_t i = 0; i < usage_data.core_num; ++i){
             printf(" %6.2f%% |", usage_pct[i+1]/data_per_sec);
         }
+        printer.last_update = time(0);
 
         memcpy(usage_pct, usage_data.usage_data, sizeof(double[usage_data.core_num+1]));
 

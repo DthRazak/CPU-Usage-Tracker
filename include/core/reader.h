@@ -19,7 +19,7 @@
 typedef struct Reader Reader;
 struct Reader {
     RingBuffer *cpu_stat_buffer;    /**< @c RingBuffer of @c cpu_stat */
-    _Atomic(clock_t) last_update;   /**< Atomic time of last read */
+    _Atomic(time_t) last_update;   /**< Atomic time of last read */
 };
 
 extern Reader reader;

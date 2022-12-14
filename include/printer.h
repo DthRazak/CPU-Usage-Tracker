@@ -18,7 +18,7 @@
 /** @brief Structure that represent thread for printing cpu load data */
 typedef struct Printer Printer;
 struct Printer {
-    _Atomic(clock_t) last_update;   /**< Atomic time of last read */
+    _Atomic(time_t) last_update;   /**< Atomic time of last read */
 };
 
 extern Printer printer;

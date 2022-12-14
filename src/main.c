@@ -8,6 +8,7 @@
 #include "core/ring_buffer.h"
 #include "termination_handler.h"
 #include "printer.h"
+#include "watchdog.h"
 
 
 int main(int argc, char* argv[argc+1]){
@@ -37,15 +38,17 @@ int main(int argc, char* argv[argc+1]){
     printer_init(core_num);
 
     // Starting modules' jobs in separate threads
-    thrd_t thrd[3];
+    thrd_t thrd[4];
     thrd_create(&thrd[0], reader_start,   0);
     thrd_create(&thrd[1], analyzer_start, 0);
     thrd_create(&thrd[2], printer_start,  0);
+    thrd_create(&thrd[3], watchdog_start, 0);
 
     // Joining all threads
     thrd_join(thrd[0], 0);
     thrd_join(thrd[1], 0);
     thrd_join(thrd[2], 0);
+    thrd_join(thrd[3], 0);
 
     // Destroing modules
     analyzer_destroy();

@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <time.h>
 #include <string.h>
 #include <unistd.h>
 
@@ -45,6 +46,7 @@ void reader_destroy(void){
 extern volatile sig_atomic_t is_active;
 
 int reader_start(void *args){
+    reader.last_update = time(0);
     while (is_active){
         if (read_cpu_data(&cpu_data) == EXIT_FAILURE){
             is_active = false;
@@ -52,6 +54,7 @@ int reader_start(void *args){
             RingBuffer_write(reader.cpu_stat_buffer, &cpu_data);
             return EXIT_FAILURE;
         }
+        reader.last_update = time(0);
         RingBuffer_write(reader.cpu_stat_buffer, &cpu_data);
 
         usleep(READER_WAIT_TIME_MCS);
