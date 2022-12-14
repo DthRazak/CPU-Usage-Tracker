@@ -45,3 +45,9 @@ target_compile_options(${PROJECT_NAME} PRIVATE
   $<$<CXX_COMPILER_ID:GNU>:-Wall -Wextra>
   $<$<CXX_COMPILER_ID:Clang>:-Weverything>
 )
+
+# Doxygen documentation.
+OPTION(BUILD_WITH_DOCS "Generate Documentation" ON)
+IF(BUILD_WITH_DOCS)
+    ADD_SUBDIRECTORY(${CMAKE_CURRENT_SOURCE_DIR}/docs)
+ENDIF()
