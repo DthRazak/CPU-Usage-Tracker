@@ -13,8 +13,18 @@ target_sources(${PROJECT_NAME}
     PRIVATE
         "../src/core/types.c"
         "../tests/core/types.c"
+        "../src/core/ring_buffer.c"
+        "../tests/core/ring_buffer.c"
+        "../src/termination_handler.c"
+        "../src/core/reader.c"
+        "../tests/core/reader.c"
+        "../src/core/analyzer.c"
+        "../tests/core/analyzer.c"
 )
+
+find_package(Threads REQUIRED)
 
 target_link_libraries(${PROJECT_NAME}
     criterion
+    Threads::Threads
 )
