@@ -56,6 +56,8 @@ int analyzer_start(void *args){
     cpu_usage_delete(usage_data);
     cpu_stat_delete(cpu_data_prev);
     cpu_stat_delete(cpu_data_now);
+
+    return EXIT_SUCCESS;
 }
 
 double calc_usage(cpu_time *time_prev, cpu_time *time_now){
