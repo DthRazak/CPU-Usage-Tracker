@@ -28,7 +28,7 @@ extern volatile sig_atomic_t is_active;
 
 void print_header(size_t core_num){
     printf("\n\n| CPU Total |");
-    for (size_t i = 0; i < core_num; ++i){
+    for (int i = 0; i < core_num; ++i){
         printf(" CPU%-5d|", i);
     }
 }
