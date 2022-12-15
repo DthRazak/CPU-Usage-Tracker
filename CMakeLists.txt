@@ -54,7 +54,7 @@ target_compile_options(${PROJECT_NAME} PRIVATE
 ADD_SUBDIRECTORY(${CMAKE_CURRENT_SOURCE_DIR}/tests)
 
 # Doxygen documentation.
-OPTION(BUILD_WITH_DOCS "Generate Documentation" ON)
+OPTION(BUILD_WITH_DOCS "Generate Documentation" OFF)
 IF(BUILD_WITH_DOCS)
     ADD_SUBDIRECTORY(${CMAKE_CURRENT_SOURCE_DIR}/docs)
 ENDIF()
