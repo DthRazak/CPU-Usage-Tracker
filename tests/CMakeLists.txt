@@ -16,6 +16,7 @@ target_sources(${PROJECT_NAME}
         "../src/core/ring_buffer.c"
         "../tests/core/ring_buffer.c"
         "../src/termination_handler.c"
+        "../src/logger.c"
         "../src/core/reader.c"
         "../tests/core/reader.c"
         "../src/core/analyzer.c"

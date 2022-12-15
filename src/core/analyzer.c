@@ -34,10 +34,12 @@ int analyzer_start(void *args){
 
     cpu_usage *usage_data = cpu_usage_new(params.core_num);
 
+    LOG(DEBUG, analyzer.last_update, "Reading data by `Analyzer`");
     RingBuffer_read(reader.cpu_stat_buffer, cpu_data_prev);
 
     analyzer.last_update = time(0);
     while (is_active) {
+        LOG(DEBUG, analyzer.last_update, "Reading data by `Analyzer`");
         RingBuffer_read(reader.cpu_stat_buffer, cpu_data_now);
 
         for (size_t i = 0; i < usage_data->core_num + 1; ++i){
@@ -48,12 +50,14 @@ int analyzer_start(void *args){
         }
         analyzer.last_update = time(0);
         RingBuffer_write(analyzer.cpu_usage_buffer, usage_data);
+        LOG(DEBUG, analyzer.last_update, "Sending data by `Analyzer`");
 
         cpu_stat_copy(cpu_data_prev, cpu_data_now);
     }
 
     // Write one last time to unlock printer thread
     RingBuffer_write(analyzer.cpu_usage_buffer, usage_data);
+    LOG(DEBUG, analyzer.last_update, "Sending data by `Analyzer`");
     
     cpu_usage_delete(usage_data);
     cpu_stat_delete(cpu_data_prev);

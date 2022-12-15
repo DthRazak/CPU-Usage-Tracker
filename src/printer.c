@@ -34,7 +34,11 @@ void print_header(size_t core_num){
 }
 
 int printer_start(void *args){
-    double *usage_pct = calloc(usage_data.core_num+1, sizeof(double));
+    double *usage_pct = malloc(sizeof(double[usage_data.core_num + 1]));
+    for (size_t i = 0; i < usage_data.core_num+1; ++i){
+        usage_pct[i] = 0.0;
+    }
+
     size_t data_per_sec = 0;
 
     time_t cur_sec = time(0);
@@ -42,6 +46,7 @@ int printer_start(void *args){
     printer.last_update = time(0);
     while (is_active) {
         while (is_active && (cur_sec == time(0) || data_per_sec == 0)){
+            LOG(DEBUG, printer.last_update, "Reading data by `Printer`");
             RingBuffer_read(analyzer.cpu_usage_buffer, &usage_data);
             for (size_t i = 0; i < usage_data.core_num+1; ++i){
                 usage_pct[i] += usage_data.usage_data[i];
@@ -59,6 +64,7 @@ int printer_start(void *args){
             printf(" %6.2f%% |", usage_pct[i+1]/data_per_sec);
         }
         printer.last_update = time(0);
+        LOG(DEBUG, printer.last_update, "Displaying data by `Printer`");
 
         memcpy(usage_pct, usage_data.usage_data, sizeof(double[usage_data.core_num+1]));
 

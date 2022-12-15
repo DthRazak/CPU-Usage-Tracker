@@ -3,6 +3,7 @@
 #include <threads.h>
 
 #include "core/ring_buffer.h"
+#include "logger.h"
 
 
 struct RingBuffer {
@@ -35,12 +36,15 @@ RingBuffer* RingBuffer_init(RingBuffer* buffer, BufferItemParams params, size_t 
                     cpu_stat *ptr = (cpu_stat*)(buffer->data);
                     cpu_stat_init(&ptr[i], params.core_num);
                 }
-            } else {
+            } else if (params.type == CPU_USAGE_T) {
                 buffer->data = malloc(sizeof(cpu_usage[size]));
                 for (size_t i = 0; i < size; ++i){
                     cpu_usage *ptr = (cpu_usage*)(buffer->data);
                     cpu_usage_init(&ptr[i], params.core_num);
                 }
+            }
+            else {
+                buffer->data = malloc(sizeof(logmsg[size]));
             }
 
             mtx_init(&buffer->mtx, mtx_plain);
@@ -64,11 +68,14 @@ void RingBuffer_delete(RingBuffer* buffer){
                 cpu_stat *ptr = (cpu_stat*)(buffer->data);
                 cpu_stat_destroy(&ptr[i]);
             }
-        } else {
+        } else if (buffer->type == CPU_USAGE_T){
             for (size_t i = 0; i < buffer->size; ++i){
                 cpu_usage *ptr = (cpu_usage*)(buffer->data);
                 cpu_usage_destroy(&ptr[i]);
             }
+        }
+        else {
+            // Do nothing...
         }
         free(buffer->data);
         BufferItemParams default_params = {
@@ -90,9 +97,13 @@ void RingBuffer_write(RingBuffer *buffer, void *item){
     if (buffer->type == CPU_STAT_T){
         cpu_stat *ptr = (cpu_stat*)(buffer->data) + buffer->tail++;
         cpu_stat_copy(ptr, item);
-    } else {
+    } else if (buffer->type == CPU_USAGE_T){
         cpu_usage *ptr = (cpu_usage*)(buffer->data) + buffer->tail++;
         cpu_usage_copy(ptr, item);
+    }
+    else{
+        logmsg *ptr = (logmsg*)(buffer->data) + buffer->tail++;
+        logmsg_copy(ptr, item);
     }
     buffer->tail %= buffer->size;
     buffer->count++;
@@ -111,9 +122,13 @@ void RingBuffer_read(RingBuffer *buffer, void *item){
     if (buffer->type == CPU_STAT_T){
         cpu_stat *ptr = (cpu_stat*)(buffer->data) + buffer->head++;
         cpu_stat_copy(item, ptr);
-    } else {
+    } else if (buffer->type == CPU_USAGE_T){
         cpu_usage *ptr = (cpu_usage*)(buffer->data) + buffer->head++;
         cpu_usage_copy(item, ptr);
+    } 
+    else{
+        logmsg *ptr = (logmsg*)(buffer->data) + buffer->head++;
+        logmsg_copy(item, ptr);
     }
     buffer->head %= buffer->size;
     buffer->count--;

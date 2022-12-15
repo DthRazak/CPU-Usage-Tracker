@@ -5,6 +5,7 @@
 
 #include "core/reader.h"
 #include "termination_handler.h"
+#include "logger.h"
 
 #define CORE_PARAMS_NUM         11
 #define CPU_STAT_BUFFER_SIZE    10
@@ -48,14 +49,21 @@ extern volatile sig_atomic_t is_active;
 int reader_start(void *args){
     reader.last_update = time(0);
     while (is_active){
+        LOG(DEBUG, reader.last_update, "Reading data by `Reader`");
         if (read_cpu_data(&cpu_data) == EXIT_FAILURE){
             is_active = false;
             // Unlocking analyzer thread
             RingBuffer_write(reader.cpu_stat_buffer, &cpu_data);
+
+            LOG(ERROR, 
+                reader.last_update, 
+                "Error occuread while reading `/stat/proc` file");
+
             return EXIT_FAILURE;
         }
         reader.last_update = time(0);
         RingBuffer_write(reader.cpu_stat_buffer, &cpu_data);
+        LOG(DEBUG, reader.last_update, "Sending data by `Reader`");
 
         usleep(READER_WAIT_TIME_MCS);
     }

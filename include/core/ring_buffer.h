@@ -10,12 +10,13 @@
 #include <stdlib.h>
 
 #include "core/types.h"
+#include "logger.h"
 
 
 /** @brief An opaque type for inter thread communication
  **  
- ** This data structure allows to send values of type @c cpu_stat or
- ** @c cpu_usage between threads.
+ ** This data structure allows to send values of type @c cpu_stat,
+ ** @c cpu_usage or @c logmsg between threads.
  ** 
 */
 typedef struct RingBuffer RingBuffer;
@@ -24,7 +25,8 @@ typedef struct RingBuffer RingBuffer;
 typedef enum BufferItemType BufferItemType;
 enum BufferItemType {
     CPU_STAT_T = 0, 
-    CPU_USAGE_T
+    CPU_USAGE_T,
+    LOG_MSG_T
 };
 
 /** @brief Structure that contains settings for @c RingBuffer initialization */

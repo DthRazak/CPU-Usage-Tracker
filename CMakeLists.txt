@@ -21,6 +21,7 @@ set(HEADERS
     "${INCLUDES_DIR}/termination_handler.h"
     "${INCLUDES_DIR}/printer.h"
     "${INCLUDES_DIR}/watchdog.h"
+    "${INCLUDES_DIR}/logger.h"
 )
 
 set(SOURCES
@@ -32,6 +33,7 @@ set(SOURCES
     "${SOURCES_FILES_DIR}/termination_handler.c"
     "${SOURCES_FILES_DIR}/printer.c"
     "${SOURCES_FILES_DIR}/watchdog.c"
+    "${SOURCES_FILES_DIR}/logger.c"
 )
 
 add_executable(${PROJECT_NAME} ${HEADERS} ${SOURCES})
